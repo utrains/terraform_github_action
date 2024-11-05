@@ -88,5 +88,5 @@ jobs:
       #     terraform_version: "1.5.0"
 
       - name: Terraform Apply
-        working-directory: ./terraform
+        # working-directory: ./terraform
         run: echo "end"
