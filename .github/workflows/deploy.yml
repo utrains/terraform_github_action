@@ -1,87 +1,33 @@
-name: Deploy Static Website
-
 on:
-  push:
-    branches:
-      - main         
-  workflow_dispatch:   # Permet de déclencher manuellement pour le destroy
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
 
 jobs:
-  deploy:
+  log-the-inputs:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}  # Exécute ce job uniquement sur les pushs, pas sur les dispatch manuels
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.8  
-
-      - name: Install AWS CLI
-        uses: unfor19/install-aws-cli-action@v1
-        with:
-          version: 2                         
-          verbose: false                     
-          arch: amd64
-
-      - name: Terraform Init
-        run: terraform init
-  
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - run: |
+          echo "Log level: $LEVEL"
+          echo "Tags: $TAGS"
+          echo "Environment: $ENVIRONMENT"
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
-
-      - name: Output website URL
-        run: echo "Website URL is $(terraform output INFO)"
-
-      - name: Cache Terraform State # Enregistre l'état entre les jobs apply et destroy
-        uses: actions/cache@v4
-        with:
-          path: .terraform
-          key: ${{ runner.os }}-terraform-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
-
-  destroy:
-    runs-on: ubuntu-latest
-    #if: ${{ github.event_name == 'workflow_dispatch' }}  # S'exécute uniquement en cas de déclenchement manuel
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.8 
-
-      - name: Restore Terraform State # Restaure l'état sauvegardé
-        uses: actions/cache@v4
-        with:
-          path: .terraform
-          key: ${{ runner.os }}-terraform-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Install AWS CLI
-        uses: unfor19/install-aws-cli-action@v1
-        with:
-          version: 2                         
-          verbose: false                     
-          arch: amd64
-
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
+          LEVEL: ${{ inputs.logLevel }}
+          TAGS: ${{ inputs.tags }}
+          ENVIRONMENT: ${{ inputs.environment }}
