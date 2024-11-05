@@ -1,85 +1,34 @@
-name: Deploy Static Website
+name: Manual Approval Deployment
 
+# Manually triggered after CI Pipeline completes
 on:
-  workflow_dispatch:
-    inputs:
-      hubAddressGroupObject:
-        type: choice
-        description: 'Enter the name of the hub where the entry is added'
-        required: true
-        default: 'AZURE-EUW-XXXXX'
-        options:
-          - 'AZURE-EUW-XXXXX'
-          - 'AZURE-FRC-XXXXX'
-          - 'AZURE-USE-XXXXX'
-          - 'AZURE-FRC-XXXXX'
-  push:
-    branches:
-      - main 
+  workflow_dispatch: # Allows for a manual trigger
+
+  # Optionally, you could set this to run automatically after a successful run of ci.yaml
+  # workflow_run:
+  #   workflows: ["CI Pipeline"]
+  #   types:
+  #     - completed
 
 jobs:
-  build:
+  approval:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: WriteMessage
-        run: |
-          echo "${{ github.event.inputs.hubAddressGroupObject }}"
-
-
+      - name: Approval Step
+        run: echo "Manual approval required before deployment."
+      
+      - name: Wait for approval
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Simulate a pause until a user approves in the GitHub interface or by running a command.
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # Exécute ce job uniquement sur les pushs, pas sur les dispatch manuels
-
+    needs: approval
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Auto stage
-        run: echo "Auto stage"
+        uses: actions/checkout@v2
 
-      # - name: Set up Terraform
-      #   uses: hashicorp/setup-terraform@v3
-      #   with:
-      #     terraform_version: 1.9.8  
-
-      # - name: Install AWS CLI
-      #   uses: unfor19/install-aws-cli-action@v1
-      #   with:
-      #     version: 2                         
-      #     verbose: false                     
-      #     arch: amd64
-
-      # - name: Terraform Init
-      #   run: terraform init
-  
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_REGION: us-west-2
-
-      # - name: Output website URL
-      #   run: echo "Website URL is $(terraform output INFO)"
-
-      # - name: Cache Terraform State # Enregistre l'état entre les jobs apply et destroy
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: .terraform
-      #     key: ${{ runner.os }}-terraform-${{ github.sha }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-terraform-
-
-  destroy:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Manual stage
-        run: echo "${{ github.event_name }}"
-
+      - name: Deploy to production
+        run: echo "Deploying to production..."
