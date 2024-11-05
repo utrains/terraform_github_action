@@ -1,6 +1,5 @@
 name: Deploy Static Website
 
-name: Echo message
 on:
   workflow_dispatch:
     inputs:
