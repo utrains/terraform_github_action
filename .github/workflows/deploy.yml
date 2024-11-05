@@ -1,29 +1,12 @@
 name: Deploy Static Website
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - main         
   #workflow_dispatch:   # Permet de déclencher manuellement pour le destroy
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
+  
 
 jobs:
   deploy:
@@ -69,8 +52,8 @@ jobs:
 
   destroy:
     runs-on: ubuntu-latest
-    #if: ${{ github.event_name == 'workflow_dispatch' }}  # S'exécute uniquement en cas de déclenchement manuel
     if: github.event_name == 'workflow_dispatch'
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
