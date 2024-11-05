@@ -27,7 +27,7 @@ jobs:
           echo "${{ github.event.inputs.hubAddressGroupObject }}"
 
 
-jobs:
+
   deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' }}  # Exécute ce job uniquement sur les pushs, pas sur les dispatch manuels
