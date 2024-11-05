@@ -50,8 +50,8 @@ jobs:
 
   destroy:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # S'exécute uniquement en cas de déclenchement manuel
-
+    #if: ${{ github.event_name == 'workflow_dispatch' }}  # S'exécute uniquement en cas de déclenchement manuel
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
