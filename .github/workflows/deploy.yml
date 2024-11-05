@@ -107,3 +107,31 @@ jobs:
         # - name: Apply Terraform Plan
         #   working-directory: ${{ env.TF_WORKING_DIR }}
         #   run: terraform apply -auto-approve tfplan.binary
+---
+name: Manual Deploy Stage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Stage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # - name: Download Plan Artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: tfplan.binary
+      #     path: ./terraform
+
+      # - name: Set up Terraform
+      #   uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: "1.5.0"
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: echo "TEST END"
