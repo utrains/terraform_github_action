@@ -52,7 +52,7 @@ jobs:
 
   destroy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    environment: Prod-manual
     
     steps:
       - name: Checkout code
