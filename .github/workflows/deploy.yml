@@ -53,7 +53,7 @@ jobs:
         # run: terraform init -input=false
 
       - name: Terraform Plan
-        working-directory: ./terraform
+        # working-directory: ./terraform
         run: echo "terraform plan -out=tfplan.binary"
 
       # - name: Show Plan
